@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 rounded-lg">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4 hw-title">Hesaba Giriş Yap</h2>
+                <form asp-action="Login" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">E-posta</label>
+                        <input name="Email" type="email" class="form-control form-control-lg" required />
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Şifre</label>
+                        <input name="Password" type="password" class="form-control form-control-lg" required />
+                    </div>
+                    
+                    <div class="mb-4 form-check">
+                        <input name="RememberMe" type="checkbox" class="form-check-input" id="RememberMe" value="true" />
+                        <label class="form-check-label text-muted" for="RememberMe">Beni Hatırla</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">Giriş Yap</button>
+                    
+                    <div class="text-center">
+                        <a asp-action="Register" class="text-decoration-none text-muted">Hesabınız yok mu? Hemen Kayıt Olun</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

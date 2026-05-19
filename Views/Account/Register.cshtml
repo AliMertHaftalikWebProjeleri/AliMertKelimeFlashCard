@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Kayıt Ol";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 rounded-lg">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4 hw-title">Sisteme Kayıt Ol</h2>
+                <form asp-action="Register" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ad Soyad</label>
+                        <input name="FullName" class="form-control form-control-lg" required />
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">E-posta Adresi</label>
+                        <input name="Email" type="email" class="form-control form-control-lg" required />
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Şifre</label>
+                        <input name="Password" type="password" class="form-control form-control-lg" required />
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Çalışmak İstediğiniz Yabancı Dil</label>
+                        <select name="PreferredLanguageId" class="form-select form-select-lg" asp-items="ViewBag.Languages" required>
+                            <option value="">-- Lütfen Bir Dil Seçiniz --</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">Kayıt Ol</button>
+                    
+                    <div class="text-center">
+                        <a asp-action="Login" class="text-decoration-none text-muted">Zaten üye misiniz? Giriş Yapın</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

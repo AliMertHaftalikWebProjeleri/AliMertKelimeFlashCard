@@ -1,0 +1,124 @@
+@model IEnumerable<AliMertKelimeEzberleme.Models.AppUser>
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h2 class="fw-bold"><i class="fa-solid fa-chart-line text-danger"></i> Yönetim Paneli</h2>
+        <p class="text-muted">Kullanıcıları ve tercih ettikleri dilleri yönetin.</p>
+    </div>
+    <div class="col-md-6 text-md-end">
+        <a asp-action="ExportExcel" class="btn btn-success me-2"><i class="fa-solid fa-file-excel"></i> Excel Olarak İndir</a>
+        <a asp-action="ExportPdf" class="btn btn-danger"><i class="fa-solid fa-file-pdf"></i> PDF Olarak İndir</a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fa-solid fa-circle-check fw-bold me-2"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fa-solid fa-circle-exclamation fw-bold me-2"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row">
+    <!-- Chart Column -->
+    <div class="col-lg-5 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-0 pt-4 pb-0">
+                <h5 class="fw-bold"><i class="fa-solid fa-chart-pie text-primary"></i> En Çok Tercih Edilen Diller</h5>
+            </div>
+            <div class="card-body d-flex justify-content-center align-items-center">
+                <canvas id="languageChart" style="max-height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Table Column -->
+    <div class="col-lg-7 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-0 pt-4 pb-0">
+                <h5 class="fw-bold"><i class="fa-solid fa-users text-primary"></i> Kayıtlı Kullanıcılar</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ad Soyad</th>
+                                <th>E-posta</th>
+                                <th>Tercih Edilen Dil</th>
+                                <th class="text-center">İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@user.FullName</td>
+                                    <td>@user.Email</td>
+                                    <td>
+                                        <span class="badge bg-primary rounded-pill">@(user.PreferredLanguage?.Name ?? "Belirtilmemiş")</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <form asp-action="DeleteUser" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Bu kullanıcıyı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.');" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fa-solid fa-trash-can"></i> Sil
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var labels = @Html.Raw(ViewBag.LanguageLabels);
+            var data = @Html.Raw(ViewBag.LanguageData);
+
+            var ctx = document.getElementById('languageChart').getContext('2d');
+            var languageChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 206, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)',
+                            'rgba(255, 159, 64, 0.8)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

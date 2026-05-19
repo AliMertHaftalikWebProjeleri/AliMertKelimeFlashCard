@@ -1,0 +1,207 @@
+@model IEnumerable<AliMertKelimeEzberleme.Models.Flashcard>
+@{
+    ViewData["Title"] = "Eğitim Paneli";
+}
+
+<style>
+    .flashcard-container {
+        perspective: 1000px;
+        margin-bottom: 30px;
+    }
+    
+    .flashcard {
+        width: 100%;
+        height: 300px;
+        position: relative;
+        transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transform-style: preserve-3d;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        cursor: pointer;
+    }
+    
+    .flashcard-container.flipped .flashcard {
+        transform: rotateY(180deg);
+    }
+    
+    .flashcard-front, .flashcard-back {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        backface-visibility: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 1.5rem;
+        padding: 25px;
+        text-align: center;
+    }
+    
+    .flashcard-front {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        color: #2c3e50;
+        border: 2px solid #e9ecef;
+    }
+    
+    .flashcard-back {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: #ffffff;
+        transform: rotateY(180deg);
+        border: 2px solid #4facfe;
+    }
+    
+    .word-text {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+    }
+    
+    .meaning-text {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .example-text {
+        font-size: 1.1rem;
+        font-style: italic;
+        opacity: 0.9;
+        margin-top: 15px;
+        background: rgba(255,255,255,0.2);
+        padding: 10px 15px;
+        border-radius: 10px;
+    }
+    
+    .action-buttons {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 10;
+    }
+
+    .btn-speak {
+        background: rgba(0, 0, 0, 0.05);
+        border: none;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0d6efd;
+        transition: all 0.3s ease;
+    }
+
+    .btn-speak:hover {
+        background: rgba(13, 110, 253, 0.15);
+        transform: scale(1.1);
+    }
+    
+    .hint-text {
+        position: absolute;
+        bottom: 20px;
+        font-size: 0.85rem;
+        opacity: 0.5;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h2 class="fw-bold text-primary mb-3">
+                <i class="fa-solid fa-language me-2"></i> @ViewBag.LanguageName Öğrenim Kartları
+            </h2>
+            <p class="text-secondary fs-5">Kelimelerin okunuşlarını dinleyin ve üzerine tıklayarak örnek cümleleriyle birlikte anlamlarını öğrenin.</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var card in Model)
+            {
+                <div class="col-lg-4 col-md-6 mb-5">
+                    <div class="flashcard-container mb-2" onclick="this.classList.toggle('flipped')">
+                        <div class="flashcard">
+                            
+                            <!-- Front of Card: Word + Speak Button -->
+                            <div class="flashcard-front">
+                                <div class="action-buttons" onclick="event.stopPropagation();">
+                                    <button class="btn btn-speak shadow-sm" onclick="speakText('@card.Word', '@ViewBag.LanguageName')" title="Sesli Dinle">
+                                        <i class="fa-solid fa-volume-high fs-5"></i>
+                                    </button>
+                                </div>
+                                
+                                <div>
+                                    <div class="word-text">@card.Word</div>
+                                </div>
+                                <div class="hint-text"><i class="fa-solid fa-hand-pointer"></i> Çevirmek İçin Tıklayın</div>
+                            </div>
+
+                            <!-- Back of Card: Meaning -->
+                            <div class="flashcard-back">
+                                <div>
+                                    <div class="meaning-text">@card.Meaning</div>
+                                </div>
+                                <div class="hint-text text-white"><i class="fa-solid fa-rotate-left"></i> Geri Dön</div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <!-- Example Sentence Underneath The Card -->
+                    @if (!string.IsNullOrEmpty(card.ExampleSentence))
+                    {
+                        <div class="text-center px-3">
+                            <p class="text-muted fst-italic" style="font-size: 1.05rem;">
+                                <i class="fa-solid fa-quote-left text-primary opacity-50 me-1"></i>
+                                @card.ExampleSentence
+                                <i class="fa-solid fa-quote-right text-primary opacity-50 ms-1"></i>
+                            </p>
+                        </div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center">
+                <div class="alert alert-warning p-4 shadow-sm rounded-4" role="alert">
+                    <i class="fa-solid fa-circle-exclamation fs-3 mb-3"></i> 
+                    <h4>Henüz kelime bulunmuyor.</h4>
+                    <p class="mb-0">Seçtiğiniz dil için sisteme henüz kelime veya örnek cümle eklenmemiştir.</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function speakText(text, language) {
+            if ('speechSynthesis' in window) {
+                var msg = new SpeechSynthesisUtterance();
+                msg.text = text;
+                
+                // Try to set appropriate language accent based on the language selected
+                if (language && language.includes("İngilizce")) {
+                    msg.lang = 'en-US';
+                } else if (language && language.includes("Almanca")) {
+                    msg.lang = 'de-DE';
+                } else if (language && language.includes("İspanyolca")) {
+                    msg.lang = 'es-ES';
+                } else {
+                    msg.lang = 'en-US'; // default fallback
+                }
+
+                window.speechSynthesis.speak(msg);
+            } else {
+                alert("Tarayıcınız sesli okuma (Text-to-Speech) özelliğini desteklemiyor.");
+            }
+        }
+    </script>
+}
